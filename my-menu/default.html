@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>my - Responsive Horizontal and Vertical Menu</title>
+<link href="./css/my-menu.css" rel="stylesheet" />
+<style>
+body {
+	background: #fff url(./img/texture.png) repeat;
+	margin: 0;
+	padding: 0;
+}
+.content {
+	margin: 0px 50px 0px 50px;
+}
+.my-menu {
+	margin: 50px 0 0 0;
+}
+a.back {
+	display: inline-block;
+	text-decoration: none;
+	color: #fff;
+	margin: 50px auto;
+	padding: 10px 30px;
+	background: #333;
+	font-family: Segoe UI;
+}
+</style>
+<script type="text/javascript" src="./js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="./js/my-menu.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$(".my-menu").mymenu({speed: 400});
+	});
+</script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body>
+<div class="content">
+  <ul class="my-menu orange">
+    <li class="active"><a href="JavaScript:void(0)"><i class="icon-heart"></i>Home</a></li>
+    <li><a href="JavaScript:void(0)"><i class="icon-cogs"></i>Services</a></li>
+    <li><a href="JavaScript:void(0)"><i class="icon-th"></i>Portfolio</a>
+      <ul>
+        <li><a href="JavaScript:void(0)">Dropdown item</a></li>
+        <li><a href="JavaScript:void(0)">Dropdown item</a></li>
+        <li><a href="JavaScript:void(0)">Dropdown item</a>
+          <ul>
+            <li><a href="JavaScript:void(0)">Dropdown item</a></li>
+            <li><a href="JavaScript:void(0)">Dropdown item</a></li>
+            <li><a href="JavaScript:void(0)">Dropdown item</a>
+              <ul>
+                <li><a href="JavaScript:void(0)">Dropdown item</a></li>
+                <li><a href="JavaScript:void(0)">Dropdown item</a></li>
+                <li><a href="JavaScript:void(0)">Dropdown item</a></li>
+                <li><a href="JavaScript:void(0)">Dropdown item</a></li>
+              </ul>
+            </li>
+            <li><a href="JavaScript:void(0)">Dropdown item</a></li>
+          </ul>
+        </li>
+        <li><a href="JavaScript:void(0)">Dropdown item</a></li>
+        <li><a href="JavaScript:void(0)">Dropdown item</a></li>
+      </ul>
+    </li>
+    <li><a href="JavaScript:void(0)"><i class="icon-bullhorn"></i>Blog</a></li>
+    <li><a href="JavaScript:void(0)"><i class="icon-envelope"></i>Contact</a></li>
+  </ul>
+</div>
+</body>
+</html>

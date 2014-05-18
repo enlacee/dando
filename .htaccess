@@ -1,0 +1,187 @@
+#---------------------------------------------------
+# Evitar el Hotlinking - Ancho de banda
+#---------------------------------------------------
+#Reemplazar ?mysite\.com/ con la url de mi web
+#ReemplazarOptions +FollowSymlinks
+#ReemplazarRewriteCond %{HTTP_REFERER} !^http://(.+\.)?mysite\.com/ [NC]
+#ReemplazarRewriteCond %{HTTP_REFERER} !^$
+
+#Reemplazar /images/nohotlink.jpg con la imagen a mostrar no robes banda ancha
+#ReemplazarRewriteRule .*\.(jpe?g|gif|bmp|png)$ /images/nohotlink.jpg [L]
+
+
+
+
+
+
+
+
+
+
+
+
+
+#---------------------------------------------------
+#Forzar a descargar ficheros especificos, y evitar abrirlos en el navegador
+#---------------------------------------------------
+<Files *.pdf>
+  ForceType application/octet-stream
+  Header set Content-Disposition attachment
+</Files>
+<Files *.rar>
+  ForceType application/octet-stream
+  Header set Content-Disposition attachment
+</Files>
+
+
+
+
+
+
+#---------------------------------------------------
+#Definir correo por defecto al administrador
+#---------------------------------------------------
+ServerSignature EMail
+SetEnv SERVER_ADMIN milindex@gmail.com
+
+
+
+
+
+
+
+#---------------------------------------------------
+# Bloquear robots
+#---------------------------------------------------
+SetEnvIfNoCase user-Agent ^FrontPage [NC,OR]
+SetEnvIfNoCase user-Agent ^Java.* [NC,OR]
+SetEnvIfNoCase user-Agent ^Microsoft.URL [NC,OR]
+SetEnvIfNoCase user-Agent ^MSFrontPage [NC,OR]
+SetEnvIfNoCase user-Agent ^Offline.Explorer [NC,OR]
+SetEnvIfNoCase user-Agent ^[Ww]eb[Bb]andit [NC,OR]
+SetEnvIfNoCase user-Agent ^Zeus [NC]
+Order Allow,Deny
+Allow from all
+Deny from env=bad_bot
+
+
+
+
+
+
+
+#---------------------------------------------------
+#Escondiendo la extencion del fichero
+#---------------------------------------------------
+#AddType application/x-httpd-php .cool
+
+
+
+
+
+
+#---------------------------------------------------
+#Pagina por defecto para los errores mas comunes
+#---------------------------------------------------
+ErrorDocument 401 /error/401.php
+ErrorDocument 403 /error/403.php
+ErrorDocument 404 /error/404.php
+ErrorDocument 500 /error/500.php
+
+
+
+
+
+ 
+ 
+ 
+ 
+#---------------------------------------------------
+#Pagina por defecto
+#---------------------------------------------------
+#DirectoryIndex index1.php
+ 
+ 
+ 
+ 
+ 
+#---------------------------------------------------
+#Prevenir el ataque mediante la inyeccion de sql
+#---------------------------------------------------
+
+# proc/self/environ? no way!
+RewriteCond %{QUERY_STRING} proc/self/environ [OR]
+ 
+# Block out any script trying to set a mosConfig value through the URL
+RewriteCond %{QUERY_STRING} mosConfig_[a-zA-Z_]{1,21}(=|\%3D) [OR]
+ 
+# Block out any script trying to base64_encode crap to send via URL
+RewriteCond %{QUERY_STRING} base64_encode.*(.*) [OR]
+ 
+# Block out any script that includes a <script> tag in URL
+RewriteCond %{QUERY_STRING} (<|%3C).*script.*(>|%3E) [NC,OR]
+ 
+# Block out any script trying to set a PHP GLOBALS variable via URL
+RewriteCond %{QUERY_STRING} GLOBALS(=|[|\%[0-9A-Z]{0,2}) [OR]
+ 
+# Block out any script trying to modify a _REQUEST variable via URL
+RewriteCond %{QUERY_STRING} _REQUEST(=|[|\%[0-9A-Z]{0,2})
+ 
+# Send all blocked request to homepage with 403 Forbidden error!
+RewriteRule ^(.*)$ index.php [F,L]
+
+
+
+
+#---------------------------------------------------
+# Evitar el acceso a mi .htacces
+#---------------------------------------------------
+
+# secure htaccess file
+<Files ~ "^\.(htaccess|htpasswd)$">
+order allow,deny
+deny from all
+</Files>     
+ 
+# prevent viewing of a specific file
+<Files secretfile.jpg>
+ order allow,deny
+ deny from all
+</Files>
+ 
+# multiple file types
+<FilesMatch ".(htaccess|htpasswd|ini|phps|fla|psd|log|sh)$">
+ Order Allow,Deny
+ Deny from all
+</FilesMatch>
+
+
+
+
+#---------------------------------------------------
+# Desactivar el acceso a todos los directorios
+#---------------------------------------------------
+# disable directory browsing
+Options All -Indexes
+
+
+
+
+
+#---------------------------------------------------
+# Barra Diagonal Obligatoria www.dominio.com/
+#---------------------------------------------------
+<IfModule mod_rewrite.c>
+ RewriteCond %{REQUEST_URI} /+[^\.]+$
+ RewriteRule ^(.+[^/])$ %{REQUEST_URI}/ [R=301,L]
+</IfModule>
+
+
+
+
+#---------------------------------------------------
+# Desactivar ventana de descarga
+#---------------------------------------------------
+AddType application/octet-stream .pdf
+AddType application/octet-stream .zip
+AddType application/octet-stream .mov
