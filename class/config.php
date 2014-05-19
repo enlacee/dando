@@ -6,8 +6,8 @@ class ConfigSQL
 		return $ArrayConfig = array(
 							"servidor"	 => "localhost",
 							"usuario"	 => "root",
-							"clave" 	 => "",
-							"basedato" 	 => "dando-dando");	
+							"clave" 	 => "123456",
+							"basedato" 	 => "free_dando");	
 	}
 }
 

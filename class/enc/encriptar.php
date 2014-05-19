@@ -38,7 +38,3 @@ class Encryption {
         return trim($decrypttext);
     }
 }
-
-
-
-?>
