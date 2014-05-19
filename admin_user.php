@@ -39,8 +39,8 @@
                         	<tr>
                                 <th width="32%">Titulo</th>
                                 <th width="26%">Precio</th>
-                                <th width="34%">Imagen</th>
-                                <th width="8%" align="center">&nbsp;</th>
+                                <th width="32%">Imagen</th>
+                                <th width="10%" align="center">&nbsp;</th>
 							</tr>
                         </thead>
                         <tbody>
@@ -48,9 +48,10 @@
                             	<td valign="middle" style="vertical-align:middle !important">Titulo</td>
                                 <td valign="middle" style="vertical-align:middle !important">Precio</td>
                                 <td valign="middle" style="vertical-align:middle !important"><img src="images/productos/completado_0mqj9xx8b7.jpg" alt="Televisor" class="responsive" width="75" height="55"></td>
-                                <td align="center" style="vertical-align:middle !important" valign="middle"><a href="#"><img src="images/iconos/actualizar.png" alt="ACtualizar" width="20" height="20"></a>
+                                <td align="center" style="vertical-align:middle !important" valign="middle">
+                                <a href="editar_producto_publicado.php"><img src="images/iconos/actualizar.png" alt="ACtualizar" width="20" height="20"></a>
                                     &nbsp;
-                                    <a href="#"><img src="images/iconos/borrar.png" alt="ACtualizar" width="20" height="20"></a>
+                                <a href="#"><img src="images/iconos/borrar.png" alt="ACtualizar" width="20" height="20"></a>
                                 </td>
                             </tr>
                         </tbody>

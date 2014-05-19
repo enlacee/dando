@@ -43,11 +43,11 @@ $encriptar = new Encryption();
 
             <li class="span3"> 
                 <div class="thumbnail">
-                    <a class="prdocutnameII" href="accesorios-para-carros.php">Accesorios para carros</a>
-                    <a href="accesorios-para-carros.php"><img alt="" src="images/categorias/accesorios-carro.jpg"></a>
+                    <a class="prdocutnameII" href="categoria_producto.php">Accesorios para carros</a>
+                    <a href="categoria_producto.php"><img alt="" src="images/categorias/accesorios-carro.jpg"></a>
                  <div class="price">
                     <div class="enlaceCategoria"> 
-                    	<a href="accesorios-para-carros.php" class="btn btn-small btn-primary">Ver Productos</a> </div>
+                    	<a href="categoria_producto.php" class="btn btn-small btn-primary">Ver Productos</a> </div>
                     </div>
                 </div>
             </li>

@@ -6,7 +6,7 @@
 		$getCategoras = $instancia->getCategorias();
 		for($i=0;$i<sizeof($getCategoras);$i++){
 	?>
-    	<li><a href="#"><?php echo $getCategoras[$i]['categoria']; ?></a></li>
+    	<li><a href="categoria_producto.php"><?php echo $getCategoras[$i]['categoria']; ?></a></li>
     
     <?php } ?>
     
