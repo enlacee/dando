@@ -1,13 +1,11 @@
-<?php require_once("class/class.php"); ?>
-<?php
+<?php require_once("class/class.php");
 
-$publicaciones = $instancia->getPublicaciones();
+$categoria = $instancia->getCategorias();
 
 //ENCRIPTAR*******************************************
-require_once("class/enc/encriptar.php");
-$encriptar = new Encryption();
+//require_once("class/enc/encriptar.php");
+//$encriptar = new Encryption();
 //ENCRIPTAR*******************************************
-
 
 ?>
 <!DOCTYPE html>
@@ -34,88 +32,25 @@ $encriptar = new Encryption();
         <section id="featured" class="row mt40">
           <h1 class="heading1 mt0"><span class="maintext">Categor&iacute;as</span></h1>
           
-          
-          
-          
-          
-          
+          <?php if (is_array($categoria) && count($categoria) > 0) : ?>
           <ul class="thumbnails">
-
+            <?php foreach ($categoria as $array) : ?>
             <li class="span3"> 
                 <div class="thumbnail">
-                    <a class="prdocutnameII" href="categoria_producto.php">Accesorios para carros</a>
-                    <a href="categoria_producto.php"><img alt="" src="images/categorias/accesorios-carro.jpg"></a>
+                    <a class="prdocutnameII" href="categoria_producto.php?cat=<?php echo $array['categoriaID'] ?>"><?php echo $array['categoria'] ?></a>
+                    <a href="categoria_producto.php?cat=<?php echo $array['categoriaID'] ?>"><img alt="" src="images/categorias/<?php echo $array['image'] ?>"></a>
                  <div class="price">
                     <div class="enlaceCategoria"> 
-                    	<a href="categoria_producto.php" class="btn btn-small btn-primary">Ver Productos</a> </div>
+                    	<a href="categoria_producto.php?cat=<?php echo $array['categoriaID'] ?>" class="btn btn-small btn-primary">Ver Productos</a> </div>
                     </div>
                 </div>
             </li>
-            
-            <li class="span3"> 
-                <div class="thumbnail">
-                    <a class="prdocutnameII" href="#">Camaras y Accesorios</a>
-                    <a href="#"><img alt="" src="images/categorias/camaras.jpg"></a>
-                 <div class="price">
-                    <div class="enlaceCategoria"> 
-                    	<a href="#" class="btn btn-small btn-primary">Ver Productos</a> </div>
-                    </div>
-                </div>
-            </li>
-            
-            <li class="span3"> 
-                <div class="thumbnail">
-                    <a class="prdocutnameII" href="#">Celulares y Tel&eacute;fonos</a>
-                    <a href="#"><img alt="" src="images/categorias/celulares.jpg"></a>
-                 <div class="price">
-                    <div class="enlaceCategoria"> 
-                    	<a href="#" class="btn btn-small btn-primary">Ver Productos</a> </div>
-                    </div>
-                </div>
-            </li>
-            
-            <li class="span3"> 
-                <div class="thumbnail">
-                    <a class="prdocutnameII" href="#">Computaci&oacute;n</a>
-                    <a href="#"><img alt="" src="images/categorias/computadoras.jpg"></a>
-                 <div class="price">
-                    <div class="enlaceCategoria"> 
-                    	<a href="#" class="btn btn-small btn-primary">Ver Productos</a> </div>
-                    </div>
-                </div>
-            </li>
-            
-            <li class="span3"> 
-                <div class="thumbnail">
-                    <a class="prdocutnameII" href="#">Consolas y Videojuegos</a>
-                    <a href="#"><img alt="" src="images/categorias/consolas.jpg"></a>
-                 <div class="price">
-                    <div class="enlaceCategoria"> 
-                    	<a href="#" class="btn btn-small btn-primary">Ver Productos</a> </div>
-                    </div>
-                </div>
-            </li>
-            
-            <li class="span3"> 
-                <div class="thumbnail">
-                    <a class="prdocutnameII" href="#">Deportes y Fitness</a>
-                    <a href="#"><img alt="" src="images/categorias/deportes.jpg"></a>
-                 <div class="price">
-                    <div class="enlaceCategoria"> 
-                    	<a href="#" class="btn btn-small btn-primary">Ver Productos</a> </div>
-                    </div>
-                </div>
-            </li>
-   
+            <?php endforeach; ?>
           </ul>
-          
-          
-          
-          
-          
-          
-          
-          <div class="pagination pull-right">
+          <?php else : ?>
+          <p>No se encontraron resultados.</p>
+          <?php endif; ?>
+          <!--<div class="pagination pull-right">
             <ul>
               <li><a href="#">Prev</a> </li>
               <li class="active"> <a href="#">1</a> </li>
@@ -124,7 +59,7 @@ $encriptar = new Encryption();
               <li><a href="#">4</a> </li>
               <li><a href="#">Next</a> </li>
             </ul>
-          </div>
+          </div>-->
         </section>
       </div>
       
@@ -132,12 +67,9 @@ $encriptar = new Encryption();
       
       
       
-      <aside class="span3"> 
-			<?php include("left.php"); ?>
-      </aside>
-      
-      
-      
+    <aside class="span3"> 
+        <?php include("left.php"); ?>
+    </aside>
       
       
     </div>
@@ -145,7 +77,6 @@ $encriptar = new Encryption();
 </div>
 <div class="clearfix"></div>
 <!-- /maincontainer -->
-
 
  
 <!--Footer-->

@@ -49,13 +49,15 @@ if(array_key_exists("entrar",$_POST)){
                   <div class="control-group">
                     <label class="control-label">Email:</label>
                     <div class="controls">
-                      <input name="email" type="text" class="{required:true} span3" id="email" placeholder="Ingrese su email">
+                      <input name="email" type="text" class="{required:true} span3" id="email" placeholder="Ingrese su email"
+                             autocomplete="off" value="">
                     </div>
                   </div>
                   <div class="control-group">
                     <label class="control-label">Contrase&ntilde;a:</label>
                     <div class="controls">
-                      <input name="clave" type="password" class="{required:true} span3" id="clave" placeholder="Ingrese su contraseña">
+                      <input name="clave" type="password" class="{required:true} span3" id="clave" placeholder="Ingrese su contraseña"
+                             autocomplete="off" value="">
                     </div>
                   </div>
                   <p>

@@ -1,7 +1,15 @@
 <?php require_once("class/class.php"); ?>
 <?php
+$id = isset($_REQUEST['cat']) ? $_REQUEST['cat'] : '';
+$publicaciones = array();
+$categoria = '-';
+if (!empty($id)) {
+    $publicaciones = $instancia->getPublicaciones($id);
+    
+    $categoriaArray = $instancia->getCategorias($id);
+    $categoria = isset($categoriaArray[0]['categoria']) ? $categoriaArray[0]['categoria'] : '';    
+}
 
-$publicaciones = $instancia->getPublicaciones();
 
 //ENCRIPTAR*******************************************
 require_once("class/enc/encriptar.php");
@@ -32,41 +40,29 @@ $encriptar = new Encryption();
     <div class="row">
       <div class="span9">
         <section id="featured" class="row mt40">
-          <h1 class="heading1 mt0"><span class="maintext">Productos de la categoria seleccionada</span></h1>
+            <h1 class="heading1 mt0"><span class="maintext"><?php echo $categoria ?></span></h1>        
+            <?php if (is_array($publicaciones) && count($publicaciones) > 0) : ?>          
+                <ul class="thumbnails">
+                <?php foreach ($publicaciones as $row) : 
+                $publicacion_detalle = $instancia->getPublicacionDetalle($row["publicacionID"], 1);
+                $publicacion_detalle[0]["nombre"] = (isset($publicacion_detalle[0]["nombre"])) ? $publicacion_detalle[0]["nombre"] : 'default.jpg';                    
+                ?>
+                 <li class="span3"> 
+                    <div class="thumbnail">
+                        <a class="prdocutname" href="publicacion-detalle.php?publicacionID=<?php echo $encriptar->encode($row["publicacionID"]); ?>"><?php echo $row["titulo"]; ?></a>
+                        <a href="publicacion-detalle.php?publicacionID=<?php echo $encriptar->encode($row["publicacionID"]); ?>"><img alt="" src="images/productos/thumb/<?php echo $publicacion_detalle[0]["nombre"] ?>"></a>
+
+                     <?php /*?> <div class="shortlinks"> Me gustaria cambiar esto por una computadora </div><?php */?>
+
+                    <div class="price">
+                        <div class="elementI"> <a href="publicacion-detalle.php?publicacionID=<?php echo $encriptar->encode($row["publicacionID"]); ?>" class="btn btn-small addtocartbutton">M&aacute;s Detalles</a> </div>
+                        <div class="elementII"> <a  class="btn btn-small btn-primary addtocartbutton"><?php echo "Bs.F ".$row["precio"]; ?></a> </div>
+                    </div>
+                 </li>
+                 <?php endforeach; ?>
+               </ul>                    
           
-          
-          
-          
-          
-          
-           <ul class="thumbnails">
-            <?php
-			foreach($publicaciones as $row){
-			?>
-            <li class="span3"> 
-                <div class="thumbnail">
-                    <a class="prdocutname" href="publicacion-detalle.php?publicacionID=<?php echo $encriptar->encode($row["publicacionID"]); ?>"><?php echo $row["titulo"]; ?></a>
-                    <a href="publicacion-detalle.php?publicacionID=<?php echo $encriptar->encode($row["publicacionID"]); ?>"><img alt="" src="images/productos/<?php echo $row["foto"]; ?>"></a>
-                 
-                <?php /*?> <div class="shortlinks"> Me gustaria cambiar esto por una computadora </div><?php */?>
-                 
-                 <div class="price">
-                    <div class="elementI"> <a href="publicacion-detalle.php?publicacionID=<?php echo $encriptar->encode($row["publicacionID"]); ?>" class="btn btn-small addtocartbutton">M&aacute;s Detalles</a> </div>
-                    <div class="elementII"> <a  class="btn btn-small btn-primary addtocartbutton"><?php echo "Bs.F ".$row["precio"]; ?></a> </div>
-                </div>
-            </li>
-            <?php
-			 }
-			?>
-          </ul>
-          
-          
-          
-          
-          
-          
-          
-          <div class="pagination pull-right">
+          <!--<div class="pagination pull-right">
             <ul>
               <li><a href="#">Prev</a> </li>
               <li class="active"> <a href="#">1</a> </li>
@@ -75,8 +71,11 @@ $encriptar = new Encryption();
               <li><a href="#">4</a> </li>
               <li><a href="#">Next</a> </li>
             </ul>
-          </div>
+          </div>-->
         </section>
+        <?php else : ?>
+          <p>No se encontrarron resultados.</p>
+        <?php endif; ?>
       </div>
       
       

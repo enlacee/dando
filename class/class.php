@@ -3,7 +3,7 @@ if (!isset($_SESSION)) {
   session_start();
 }
 
-error_reporting(1);
+//error_reporting(1);
 date_default_timezone_set("America/Caracas");
 
 define('DS', DIRECTORY_SEPARATOR);
@@ -33,6 +33,7 @@ abstract class Config
 											$IncArray["clave"]);
 			$dbConnect->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 			$dbConnect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                        $dbConnect->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, "SET NAMES utf8");                        
 			return $dbConnect;
         } 
 		catch (PDOException $e){	
@@ -454,7 +455,7 @@ class Apps extends Config
 					}
 					
 					if (count($resultadoPass) > 0) {	
-						$sql = "SELECT email,clave FROM usuarios WHERE email= ? AND clave= ? ;";
+						$sql = "SELECT usuarioID, email,clave FROM usuarios WHERE email= ? AND clave= ? ;";
 						$sqlQuery = $this->_db->prepare($sql);
 						$sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
 					
@@ -465,7 +466,8 @@ class Apps extends Config
 							}
 							
 							if (count($resultadoAll) > 0) {
-								$_SESSION["email"] = $email;
+								$_SESSION["email"] = $email;                                                                
+                                                                $_SESSION['usuarioID'] = $resultadoAll['usuarioID'];                                                                
 								return header("Location: index.php"); 
 								
 							} else{
@@ -505,55 +507,59 @@ class Apps extends Config
 		}
 		return $this->_getSaludoBienvenida;
 	}
-
-
-
-
 	
 	/**
 	* Muestra publicaciones
 	*/
-	public function getPublicaciones()
+	public function getPublicaciones($categoriaID = '')
 	{
-		Apps::acentosQuery();
-		$sql = "SELECT * FROM publicaciones WHERE productoestado='disponible' ORDER BY publicacionID DESC";
-		$sqlQuery = $this->_db->query($sql);
-		$sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
-	
-		foreach($sqlQuery as $row){
-	
-			$this->_getPublicaciones[]=$row;
-				
-		}
-		return $this->_getPublicaciones;
+            Apps::acentosQuery();
+            $sql = "SELECT * FROM publicaciones WHERE productoestado='disponible' ";
+            if (!empty($categoriaID)) {
+                $sql .= "AND categoriaID = {$categoriaID} ";
+            }
+            $sql .= "ORDER BY publicacionID DESC ";
+            
+            $sqlQuery = $this->_db->query($sql);
+            $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+            $rs = $sqlQuery->fetchAll();
+            
+            return $rs;
 	}
 	
-	
+
 
 	/**
-	* Muestra detalles de una publicacion
+	* Muestra detalles de una publicacion OPTIMIZAR segun
 	*/
-	public function getPublicacionDetalle($id)
+	public function getPublicacionDetalle($id, $limit = '',$sqlOption = '')
 	{
-		Apps::acentosQuery();
-		$sql = "SELECT * FROM publicaciones WHERE publicacionID =? ;";
-		$sqlQuery = $this->_db->prepare($sql);
-		$sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
-	
-		if($sqlQuery->execute( array( $id ) )){
-	
-			while($row = $sqlQuery->fetch()){
-	
-				$this->_getPublicacionDetalle[] = $row;
-			}
-		}
-		return $this->_getPublicacionDetalle;
+            Apps::acentosQuery();
+            //$sql = "SELECT * FROM publicaciones WHERE publicacionID = ? ;";
+            $sql = "SELECT ";
+            if (!empty($sqlOption)) {
+                if($sqlOption == 'basic') {
+                    $sql .= "publicaciones_images.id, publicaciones_images.nombre ";
+                }
+            }else {
+                $sql .= "* ";
+            }
+            $sql .= " FROM publicaciones, publicaciones_images 
+            WHERE publicaciones_images.publicacionID  = ? 
+            AND publicaciones.publicacionID = ? ";
+            if (!empty($limit) && $limit > 0) {
+               $sql .="LIMIT $limit ";
+            }
+
+            $sqlQuery = $this->_db->prepare($sql);
+            $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+            $rs = false;
+            if($sqlQuery->execute( array( $id, $id ) )) {
+                $rs = $sqlQuery->fetchAll();
+            }
+            
+            return $rs;
 	}
-
-
-
-
-
 
 	/**
 	* Hace el trueque o compra un producto
@@ -690,16 +696,22 @@ class Apps extends Config
 	/**
 	* Muestra categorias
 	*/
-	public function getCategorias()
+	public function getCategorias($id = '')
 	{
-		Apps::acentosQuery();
-		$sql = "SELECT * FROM categorias ORDER BY categoria ASC";
-		$sqlQuery = $this->_db->query($sql);
-		$sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
-		foreach($sqlQuery as $row){
-			$this->_getCategorias[]=$row;	
-		}
-		return $this->_getCategorias;
+            Apps::acentosQuery();
+            $sql = "SELECT * FROM categorias ";
+            if (!empty($id)) {
+                $sql .= "WHERE categoriaID = {$id} LIMIT 1 ";
+            }  else {
+                $sql .= "ORDER BY categoria ASC ";
+            }            
+
+            $sqlQuery = $this->_db->query($sql);
+            $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+            foreach($sqlQuery as $row){
+                $this->_getCategorias[] = $row;
+            }
+            return $this->_getCategorias;
 	}
 	
 	
@@ -714,20 +726,20 @@ class Apps extends Config
 	/**
 	* Publicar un producto
 	*/
-	public function setProducto($categoriaID,$publicadopor,$vendidopor,$estadopublicacion,$titulo,$foto,$video,$productoestado,$precio,$pais,$ciudad,$detalles,$ip,$fecha,$hora)
+	public function setProducto($categoriaID,$publicadopor,$vendidopor,$estadopublicacion,$productonuevousado,$titulo,$video,$productoestado,$precio,$pais,$ciudad,$detalles,$ip,$fecha,$hora)
 	{
 		Apps::acentosQuery();
 		$sql = "INSERT  INTO publicaciones 
-							(categoriaID, publicadopor, vendidopor, estadopublicacion, titulo, foto, video, productoestado, precio, pais, ciudad, detalles, ip, fecha, hora) 
-						VALUES
-							(:categoriaID,:publicadopor,:vendidopor,:estadopublicacion,:titulo,:foto,:video,:productoestado,:precio,:pais,:ciudad,:detalles,:ip,:fecha,:hora) ;";
+                (categoriaID, publicadopor, vendidopor, estadopublicacion,productonuevousado , titulo, video, productoestado, precio, pais, ciudad, detalles, ip, fecha, hora) 
+                VALUES
+                (:categoriaID,:publicadopor,:vendidopor,:estadopublicacion,:productonuevousado,:titulo,:video,:productoestado,:precio,:pais,:ciudad,:detalles,:ip,:fecha,:hora) ;";
 		$sqlQuery = $this->_db->prepare($sql);
 		$sqlQuery->bindValue(":categoriaID",		$categoriaID,		PDO::PARAM_STR);
 		$sqlQuery->bindValue(":publicadopor",		$publicadopor,		PDO::PARAM_STR);
 		$sqlQuery->bindValue(":vendidopor",			$vendidopor,		PDO::PARAM_STR);
 		$sqlQuery->bindValue(":estadopublicacion",	$estadopublicacion,	PDO::PARAM_STR);
-		$sqlQuery->bindValue(":titulo",				$titulo,			PDO::PARAM_STR);
-		$sqlQuery->bindValue(":foto",				$foto,				PDO::PARAM_STR);
+                $sqlQuery->bindValue(":productonuevousado",	$productonuevousado,	PDO::PARAM_INT);                
+		$sqlQuery->bindValue(":titulo",				$titulo,			PDO::PARAM_STR);		
 		$sqlQuery->bindValue(":video",				$video,				PDO::PARAM_STR);
 		$sqlQuery->bindValue(":productoestado",		$productoestado,	PDO::PARAM_STR);
 		$sqlQuery->bindValue(":precio",				$precio,			PDO::PARAM_STR);
@@ -738,12 +750,12 @@ class Apps extends Config
 		$sqlQuery->bindValue(":fecha",				$fecha,				PDO::PARAM_STR);
 		$sqlQuery->bindValue(":hora",				$hora,				PDO::PARAM_STR);
 		$sqlQuery->execute();
-	}
+                
+                return $this->_db->lastInsertId(); // $last_id = $pdo->lastInsertId();	
+                
+}
 	
-	
-	
-	
-	
+		
 	/**
 	* Muestra publicaciones
 	*/
@@ -761,9 +773,180 @@ class Apps extends Config
 		}
 		return $this->_getTopTen;
 	}
+        
+        
+        /**
+         * anb
+         * ------------------------------- user -------------------------------
+         * $ID = id o email
+         */	
+        public function getUser($id)
+        {   
+            $sql = "SELECT *FROM usuarios ";
+            
+            $pos = strpos($id, '@');
+            if ($pos === false) {
+                $sql.="WHERE usuarioID = {$id} ";
+            } else {
+                $sql.="WHERE email = '{$id}' ";
+            }            
+            $sql.="LIMIT 1 ";
+            
+            $sqlQuery = $this->_db->query($sql);
+            $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+            $rs = $sqlQuery->fetch();            
+            
+            return $rs;           
+        }
 	
-	
+        /**
+         * Actualizar datos del usuario.
+         * @param type $array
+         */
+        public function updateUser($array) {
+            $sql = "UPDATE usuarios SET "
+                    . "nombres = ? "
+                    . ",email = ? "
+                    . ",tlfcelular = ? "
+                    . ",tlfcasa = ? "
+                    . ",empresa = ? "
+                    . ",direccion = ? "
+                    . ",ciudad = ? "
+                    . ",pais = ? ";
+            if (!empty($array['clave'])) {
+                $sql .= ',clave = "'. $array['clave'] .'" ';
+            }
+            $sql .= "WHERE usuarioID = ? ";            
+            
+            $sqlQuery = $this->_db->prepare($sql);
+            $sqlQuery->bindParam(1, $array['nombres']);
+            $sqlQuery->bindParam(2, $array['email']);
+            $sqlQuery->bindParam(3, $array['tlfcelular']);
+            $sqlQuery->bindParam(4, $array['tlfcasa']);
+            $sqlQuery->bindParam(5, $array['empresa']);
+            $sqlQuery->bindParam(6, $array['direccion']);
+            $sqlQuery->bindParam(7, $array['ciudad']);
+            $sqlQuery->bindParam(8, $array['pais']);
+            $sqlQuery->bindParam(9, $array['usuarioID']);
 
+            $sqlQuery->execute();            
+        }
+        
+        /*
+         * Registrar imagenes (de publicacion)
+         */
+        public function insertImagesByPublicacion($array) {
+            $sql = "INSERT  INTO publicaciones_images (publicacionID, nombre, fecha_registro, estado) VALUES (?, ?, ?, ?);";
+            $sqlQuery = $this->_db->prepare($sql);
+            $sqlQuery->bindParam(1, $array['publicacionID']);
+            $sqlQuery->bindParam(2, $array['nombre']);
+            $sqlQuery->bindParam(3, $array['fecha_registro']);            
+            $sqlQuery->bindParam(4, $array['estado']);
+            
+            $sqlQuery->execute();
+        }
+        
+        /**
+         * lista de productos del usuario
+         * @param type $usuarioID
+         */
+        public function getPublicacionesByUser($email, $status = '') {
+            $sql = "SELECT *FROM publicaciones WHERE publicadopor = '{$email}' ";            
+            if ($status == 1) {
+                $sql.="AND productoestado = 'disponible' ";
+            } else if ($status == 0) {
+                $sql.="AND productoestado = 'comprado' "; // comprado = trueque echo
+            }                        
+            $sqlQuery = $this->_db->query($sql);
+            $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+            $rs = $sqlQuery->fetchAll();            
+            
+            return $rs;
+        }
+        
+        public function getPublicacionesByUserTrueque($email) {
+            $sql = "SELECT *FROM publicaciones WHERE compradopor = '{$email}' AND productoestado = 'comprado' ";
+            $sqlQuery = $this->_db->query($sql);
+            $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+            $rs = $sqlQuery->fetchAll();
+            return $rs;
+        }
+        
+        /**
+         * Obtener publicacion por ID
+         * @param Integer $id
+         * @return Array
+         */
+        public function getPublicacion($id) {
+            $this->acentosQuery();
+            $sql = "SELECT *FROM publicaciones WHERE publicacionID = {$id} LIMIT 1";
+            $sqlQuery = $this->_db->query($sql);
+            $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+            $rs = $sqlQuery->fetch();
+            
+            return $rs;              
+        }
+        
+        /*
+         * eliminar foto de (publicaciones_images)
+         */
+        public function deleteImagePublicacion($id) {
+            
+            $sql = "DELETE FROM publicaciones_images WHERE id = {$id}";            
+            $sqlQuery = $this->_db->prepare($sql);
+            $sqlQuery->execute();       
+        }
+        
+        /**
+         * eliminar publicacion (perfil)
+         */
+        public function deletePublicacion($id) {
+            
+            $sql = "DELETE FROM publicaciones WHERE publicacionID = {$id}";            
+            $sqlQuery = $this->_db->prepare($sql);
+            $sqlQuery->execute();       
+        }        
+        
+
+        /**
+         * Edicion de publicacion (producto)
+         * @param type $array
+         */
+        public function updatePublicacion($array) {
+            $sql = "UPDATE publicaciones SET "
+                    . "categoriaID = ? "
+                    . ",titulo = ? "
+                    . ",video = ? "
+                    . ",productonuevousado = ? "
+                    . ",precio = ? "
+                    . ",pais = ? "
+                    . ",ciudad = ? "
+                    . ",detalles = ? ";
+            $sql .= "WHERE publicacionID = ? ";            
+            
+            $sqlQuery = $this->_db->prepare($sql);
+            $sqlQuery->bindParam(1, $array['categoriaID']);
+            $sqlQuery->bindParam(2, $array['titulo']);
+            $sqlQuery->bindParam(3, $array['video']);
+            $sqlQuery->bindParam(4, $array['productonuevousado']);
+            $sqlQuery->bindParam(5, $array['precio']);
+            $sqlQuery->bindParam(6, $array['pais']);
+            $sqlQuery->bindParam(7, $array['ciudad']);
+            $sqlQuery->bindParam(8, $array['detalles']);
+            $sqlQuery->bindParam(9, $array['publicacionID']);
+
+            $sqlQuery->execute();            
+        }
+        
+        public function eliminarTrueque($id) {
+            $sql = "UPDATE publicaciones SET "
+                    . "compradopor = '' "
+                    . ",compradofecha = '' "
+                    . ",productoestado = 'disponible' ";
+            $sql .= "WHERE publicacionID = {$id} ";
+            $sqlQuery = $this->_db->prepare($sql);
+            $sqlQuery->execute();
+        }
 	
 	
 }

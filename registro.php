@@ -7,16 +7,19 @@ if(isset($_SESSION["email"])){
 
 if(array_key_exists("registro", $_POST)){
 
-	$registro_usuario = $instancia->setRegistroUsuarios("registrado",Apps::acentos($_POST["nombres"]),Apps::acentos("username"),$_POST["email"],$_POST["tlfcelular"],$_POST["tlfcasa"],md5($_POST["clave"]),Apps::acentos($_POST["empresa"]),Apps::acentos($_POST["direccion"]),Apps::acentos($_POST["ciudad"]),Apps::acentos($_POST["pais"]),date("d/m/Y"),date("h:m:i"),Apps::acentos("username").rand("0000","9999"),$estadousuario="1",$_SERVER['REMOTE_ADDR']);
-	
-	//echo "<pre>"; print_r($_POST);
+    $_POST['pais'] = utf8_decode($_POST['pais']);
+    
+    //echo "<pre>";  print_r($_POST); exit;
+    $registro_usuario = $instancia->setRegistroUsuarios("registrado",Apps::acentos($_POST["nombres"]),Apps::acentos("username"),$_POST["email"],$_POST["tlfcelular"],$_POST["tlfcasa"],md5($_POST["clave"]),Apps::acentos($_POST["empresa"]),Apps::acentos($_POST["direccion"]),Apps::acentos($_POST["ciudad"]),$_POST["pais"],date("d/m/Y"),date("h:m:i"),Apps::acentos("username").rand("0000","9999"),$estadousuario="1",$_SERVER['REMOTE_ADDR']);
+
 
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<!--<meta charset="utf-8">-->
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 <title>&Aacute;rea de regitro de usuarios</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="">
@@ -127,7 +130,8 @@ if(array_key_exists("registro", $_POST)){
                 <div class="control-group">
                   <label class="control-label"> TLF Casa/Oficina:</label>
                   <div class="controls">
-                    <input name="tlfcasa" type="text"  class="input-xlarge" id="tlfcasa" placeholder="Ingrese su numero de casa/oficina">
+                      <input  type="text" name="tlfcasa" id="tlfcasa" placeholder="Ingrese su numero de casa/oficina" 
+                              autocomplete="off" value="">
                   </div>
                 </div>
               </fieldset>
@@ -143,7 +147,8 @@ if(array_key_exists("registro", $_POST)){
     <div class="control-group">
       <label  class="control-label"><span class="red">*</span> Contrase&ntilde;a:</label>
       <div class="controls">
-        <input name="clave" type="password"  class="input-xlarge" id="clave" placeholder="Ingrese su contraseña">
+        <input name="clave" type="password"  class="input-xlarge" id="clave" placeholder="Ingrese su contraseña"
+               autocomplete="off" value="">
       </div>
     </div>
     <div class="control-group">
