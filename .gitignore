@@ -1,1 +1,14 @@
-/nbproject/private/
+# ide netbeans
+nbproject/*
+
+# image productos
+/images/productos/*
+!/images/productos/default.jpg
+
+# images producto (tmp)
+/images/productos/tmp/*
+!/images/productos/tmp/default.jpg
+
+# images producto (thumb)
+/images/productos/thumb/*
+!/images/productos/thumb/default.jpg
