@@ -708,10 +708,11 @@ class Apps extends Config
 
             $sqlQuery = $this->_db->query($sql);
             $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+            $rs = false;
             foreach($sqlQuery as $row){
-                $this->_getCategorias[] = $row;
+                $rs[] = $row;
             }
-            return $this->_getCategorias;
+            return $rs;
 	}
 	
 	
