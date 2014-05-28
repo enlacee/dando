@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `free_dando` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci */;
-USE `free_dando`;
 -- MySQL dump 10.13  Distrib 5.5.37, for debian-linux-gnu (x86_64)
 --
 -- Host: 127.0.0.1    Database: free_dando
