@@ -33,7 +33,7 @@ abstract class Config
 											$IncArray["clave"]);
 			$dbConnect->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 			$dbConnect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                        $dbConnect->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, "SET NAMES utf8");                        
+                        $dbConnect->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, "SET NAMES utf8");
 			return $dbConnect;
         } 
 		catch (PDOException $e){	
