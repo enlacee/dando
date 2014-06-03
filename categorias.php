@@ -1,6 +1,20 @@
 <?php require_once("class/class.php");
 
-$categoria = $instancia->getCategorias();
+    //$categoria = $instancia->getCategorias();
+
+    // ZEBRA - PAGINATOR    
+    $records_per_page = 9;    
+    $pagination = new Zebra_Pagination();    
+    $pagination->navigation_position(isset($_GET['navigation_position']) && in_array($_GET['navigation_position'], array('left', 'right')) ? $_GET['navigation_position'] : 'outside');
+    $offset = (($pagination->get_page() - 1) * $records_per_page); 
+    $limit = $records_per_page;
+    
+    $categoria = $instancia->getCategorias('', 'ASC', $limit, $offset, FALSE);    
+    $rows = $instancia->getCategorias('', 'ASC', '', '', TRUE);
+    $pagination->records($rows);
+    // records per page
+    $pagination->records_per_page($records_per_page);
+
 
 //ENCRIPTAR*******************************************
 //require_once("class/enc/encriptar.php");
@@ -50,6 +64,8 @@ $categoria = $instancia->getCategorias();
           <?php else : ?>
           <p>No se encontraron resultados.</p>
           <?php endif; ?>
+          
+          <?php echo $pagination->render(); ?>
           <!--<div class="pagination pull-right">
             <ul>
               <li><a href="#">Prev</a> </li>

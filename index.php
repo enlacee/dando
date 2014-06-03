@@ -1,14 +1,36 @@
 <?php require_once("class/class.php"); ?>
 <?php
+    //ENCRIPTAR*******************************************
+    require_once("class/enc/encriptar.php");
+    $encriptar = new Encryption();
+    //ENCRIPTAR*******************************************
+    $topTen = $instancia->getTopTen();    
 
-$publicaciones 	= $instancia->getPublicaciones();
-$topTen = $instancia->getTopTen();
+    // ZEBRA - PAGINATOR
+    // how many records should be displayed on a page?
+    $records_per_page = 9;
 
-//ENCRIPTAR*******************************************
-require_once("class/enc/encriptar.php");
-$encriptar = new Encryption();
-//ENCRIPTAR*******************************************
+    // instantiate the pagination object
+    $pagination = new Zebra_Pagination();
 
+    // set position of the next/previous page links
+    $pagination->navigation_position(isset($_GET['navigation_position']) && in_array($_GET['navigation_position'], array('left', 'right')) ? $_GET['navigation_position'] : 'outside');
+
+    // if query could not be executed
+
+    $offset = (($pagination->get_page() - 1) * $records_per_page); 
+
+    $limit = $records_per_page;
+    $publicaciones = $instancia->getPublicaciones('disponible', 'desc', $limit, $offset, FALSE);
+
+    // fetch the total number of records in the table
+    $rows = $instancia->getPublicaciones('disponible', '', '', '', TRUE);
+    
+    // pass the total number of records to the pagination class
+    $pagination->records($rows);
+
+    // records per page
+    $pagination->records_per_page($records_per_page);
 
 ?>
 <!DOCTYPE html>
@@ -27,6 +49,15 @@ $encriptar = new Encryption();
 <?php include("cabecera.php"); ?>
 </header>
 <!-- Header End -->
+
+<?php if (isset($_SESSION['message'])) : ?>    
+<div class="container">
+    <div class="alert alert-warning fade in">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+          <?php echo $_SESSION['message']; unset($_SESSION['message']); ?>
+    </div>
+</div><!-- message box -->    
+<?php endif; ?>
 
 <div id="maincontainer">
   <div class="container">
@@ -96,10 +127,8 @@ $encriptar = new Encryption();
           </ul>
           
           
-          
-          
-          
-          
+        <!-- paginator -->
+        <?php echo $pagination->render(); ?>
           <!--
           <div class="pagination pull-right">
             <ul>

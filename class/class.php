@@ -10,6 +10,7 @@ define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', realpath(dirname(__FILE__)) . DS);
 define('APP_PATH', ROOT . DS);
 include APP_PATH."/config.php";
+include APP_PATH . "/helper/Zebra_Pagination.php";
 
 abstract class Config
 {
@@ -507,25 +508,64 @@ class Apps extends Config
 		}
 		return $this->_getSaludoBienvenida;
 	}
-	
-	/**
-	* Muestra publicaciones
-	*/
-	public function getPublicaciones($categoriaID = '')
-	{
-            Apps::acentosQuery();
-            $sql = "SELECT * FROM publicaciones WHERE productoestado='disponible' ";
-            if (!empty($categoriaID)) {
-                $sql .= "AND categoriaID = {$categoriaID} ";
+       
+        /**
+         * Muestra publicaciones (2) paginator
+         */
+        public function getPublicaciones($status = 'disponible', $order = 'desc', $limit = '', $offset = '', $rows = false)
+        {
+            $this->acentosQuery();
+            if ($rows == TRUE) {
+                $sql = "SELECT count(*) as count FROM publicaciones ";                
+                $sql .= ($status != '') ? "WHERE productoestado = '{$status}' " : "WHERE 1 = 1 ";
+                $sql .= !empty($order) ? "ORDER BY publicacionID {$order} " : '';
+                $sql .= (($limit != '') && ($offset != ''|| $offset == 0)) ? "LIMIT {$offset},{$limit} " : '';
+
+                $sqlQuery = $this->_db->query($sql);
+                $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+                $rs = $sqlQuery->fetch();
+                $rs = is_array($rs) ? $rs['count'] : 0;
+            } else {
+                $sql = "SELECT * FROM publicaciones ";
+                $sql .= ($status != '') ? "WHERE productoestado = '{$status}' " : "WHERE 1 = 1 ";
+                $sql .= !empty($order) ? "ORDER BY publicacionID {$order} " : '';
+                $sql .= (($limit != '') && ($offset != ''|| $offset == 0)) ? "LIMIT {$offset},{$limit} " : '';
+                //echo $sql; exit;
+                $sqlQuery = $this->_db->query($sql);
+                $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+                $rs = $sqlQuery->fetchAll();            
             }
-            $sql .= "ORDER BY publicacionID DESC ";
-            
-            $sqlQuery = $this->_db->query($sql);
-            $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
-            $rs = $sqlQuery->fetchAll();
-            
+
             return $rs;
-	}
+        }
+        
+	public function getPublicacionesbyCategory($idCategory, $status = 'disponible', $order = 'desc', $limit = '', $offset = '', $rows = false)
+	{
+            $this->acentosQuery();
+            if ($rows == TRUE) {
+                $sql = "SELECT count(*) as count FROM publicaciones ";                
+                $sql .= ($status != '') ? "WHERE productoestado = '{$status}' " : "WHERE 1 = 1 ";
+                $sql .= ($idCategory != '') ? "AND categoriaID = {$idCategory} " : '';                
+                $sql .= !empty($order) ? "ORDER BY publicacionID {$order} " : '';
+                $sql .= (($limit != '') && ($offset != ''|| $offset == 0)) ? "LIMIT {$offset},{$limit} " : '';
+
+                $sqlQuery = $this->_db->query($sql);
+                $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+                $rs = $sqlQuery->fetch();
+                $rs = is_array($rs) ? $rs['count'] : 0;
+            } else {
+                $sql = "SELECT * FROM publicaciones ";
+                $sql .= ($status != '') ? "WHERE productoestado = '{$status}' " : "WHERE 1 = 1 ";
+                $sql .= ($idCategory != '') ? "AND categoriaID = {$idCategory} " : '';                
+                $sql .= !empty($order) ? "ORDER BY publicacionID {$order} " : '';
+                $sql .= (($limit != '') && ($offset != ''|| $offset == 0)) ? "LIMIT {$offset},{$limit} " : '';
+
+                $sqlQuery = $this->_db->query($sql);
+                $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+                $rs = $sqlQuery->fetchAll();            
+            }            
+            return $rs;
+	}        
 	
 
 
@@ -696,32 +736,30 @@ class Apps extends Config
 	/**
 	* Muestra categorias
 	*/
-	public function getCategorias($id = '')
-	{
-            Apps::acentosQuery();
-            $sql = "SELECT * FROM categorias ";
-            if (!empty($id)) {
-                $sql .= "WHERE categoriaID = {$id} LIMIT 1 ";
-            }  else {
-                $sql .= "ORDER BY categoria ASC ";
-            }            
+        public function getCategorias($status = '', $order = 'asc', $limit = '', $offset = '', $rows = false)
+        {
+            $this->acentosQuery();
+            if ($rows == TRUE) {
+                $sql = "SELECT count(*) as count FROM categorias ";
+                $sql .= !empty($order) ? "ORDER BY categoria {$order} " : '';
+                $sql .= (($limit != '') && ($offset != ''|| $offset == 0)) ? "LIMIT {$offset},{$limit} " : '';
 
-            $sqlQuery = $this->_db->query($sql);
-            $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
-            $rs = false;
-            foreach($sqlQuery as $row){
-                $rs[] = $row;
+                $sqlQuery = $this->_db->query($sql);
+                $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+                $rs = $sqlQuery->fetch();
+                $rs = is_array($rs) ? $rs['count'] : 0;
+            } else {
+                $sql = "SELECT * FROM categorias ";                
+                $sql .= !empty($order) ? "ORDER BY categoria {$order} " : '';
+                $sql .= (($limit != '') && ($offset != ''|| $offset == 0)) ? "LIMIT {$offset},{$limit} " : '';
+                //echo $sql; exit;
+                $sqlQuery = $this->_db->query($sql);
+                $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+                $rs = $sqlQuery->fetchAll();            
             }
+
             return $rs;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
+        }
 	
 	
 	/**
@@ -858,10 +896,10 @@ class Apps extends Config
             } else if ($status == 0) {
                 $sql.="AND productoestado = 'comprado' "; // comprado = trueque echo
             }                        
-            $sqlQuery = $this->_db->query($sql);
-            $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+                $sqlQuery = $this->_db->query($sql);
+                $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
             $rs = $sqlQuery->fetchAll();            
-            
+
             return $rs;
         }
         
@@ -947,6 +985,19 @@ class Apps extends Config
             $sql .= "WHERE publicacionID = {$id} ";
             $sqlQuery = $this->_db->prepare($sql);
             $sqlQuery->execute();
+        }
+        
+        /**
+         * Validacion email : dando/registro.php
+         */
+        public function validarEmail($email)
+        {
+            $this->acentosQuery();
+            $sql = "SELECT * FROM usuarios WHERE email = '{$email}'";            
+            $sqlQuery = $this->_db->query($sql);
+            $sqlQuery->setFetchMode(PDO::FETCH_ASSOC);
+            $rs = $sqlQuery->fetch();
+            return $rs;            
         }
 	
 	

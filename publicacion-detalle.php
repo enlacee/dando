@@ -6,10 +6,10 @@ require_once("class/enc/encriptar.php");
 $encriptar = new Encryption();
 //ENCRIPTAR*******************************************
 
-$publicacion_detalle = $instancia->getPublicacionDetalle($encriptar->decode($_GET["publicacionID"]));
-
-//echo "<pre>";
-//print_r($publicacion_detalle); exit;
+$publicacionId = isset($_GET["publicacionID"]) ? $encriptar->decode($_GET["publicacionID"]) : '';
+if (!empty($publicacionId)) {
+    $publicacion_detalle = $instancia->getPublicacionDetalle($publicacionId);
+}
 
 if (array_key_exists("comprar", $_POST)) {
     $instancia->setComprar($_SESSION["email"], date("d/m/Y"), $encriptar->decode($_GET["publicacionID"]), $_GET["publicacionID"]);
@@ -34,6 +34,7 @@ if (array_key_exists("comprar", $_POST)) {
         <div id="maincontainer">
             <div class="container">
                 <div class="row">
+                    <?php if (isset($publicacion_detalle) && is_array($publicacion_detalle) && count($publicacion_detalle) > 0 ) : ?>
                     <?php for ($i = 0; $i < sizeof($publicacion_detalle); $i++) { ?>
                         <div class="span9">
                             <div class="row">
@@ -136,10 +137,15 @@ if (array_key_exists("comprar", $_POST)) {
 
                         </div>
 
-                        <?php
-                    }
-                    ?>
-
+                        <?php }?>
+                        <?php else : ?>
+                        <div class="row">
+                        <div class="span9">
+                            <div class="row">
+                                No se econtraron datos en la publicacion.                                
+                            </div>
+                        </div>
+                        <?php endif; ?>
 
 
 

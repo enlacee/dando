@@ -9,15 +9,13 @@ if (array_key_exists("entrar", $_POST)) {
     $acceso_usuario = $instancia->accesoUsuario($_POST["email"], md5($_POST["clave"]));
 }
 
-if (array_key_exists("publicar", $_POST)) {    
-        
-    $_POST['productonuevousado'] = empty($_POST['productonuevousado']) ? 1 : $_POST['productonuevousado'];
-    
+if (array_key_exists("publicar", $_POST)) {        
+    $_POST['productonuevousado'] = empty($_POST['productonuevousado']) ? 1 : $_POST['productonuevousado'];    
     $productoID = $instancia->setProducto(Apps::acentos($_POST["categoriaID"]), $_SESSION["email"], $_SESSION["email"], "1", $_POST['productonuevousado'], Apps::acentos($_POST["titulo"]), Apps::acentos($_POST["video"]), "disponible", $_POST["precio"], $_POST["pais"], Apps::acentos($_POST["ciudad"]), Apps::acentos($_POST["detalles"]), $_SERVER["REMOTE_ADDR"], date("d/m/Y"), date("h:m:i"));
     // registrar imagenes de la publicacion de (SESSION)
-    saveImage($productoID, $instancia);    
-    
-    
+    saveImage($productoID, $instancia);
+    $_SESSION['message'] = "Tu publicaci&oacuten fue registrado correctamente.";
+    header("Location: index.php");
 }
 
 /*

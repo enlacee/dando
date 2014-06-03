@@ -47,3 +47,5 @@
 
 <link rel="shortcut icon" href="assets/ico/favicon.html">
 
+<!-- pagigandor zebra -->
+<link rel="stylesheet" type="text/css" href="css/zebra_paginator/zebra_pagination.css"> 

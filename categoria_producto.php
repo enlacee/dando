@@ -4,8 +4,21 @@ $id = isset($_REQUEST['cat']) ? $_REQUEST['cat'] : '';
 $publicaciones = array();
 $categoria = '-';
 if (!empty($id)) {
-    $publicaciones = $instancia->getPublicaciones($id);
     
+    // ZEBRA - PAGINATOR    
+    $records_per_page = 9;    
+    $pagination = new Zebra_Pagination();    
+    $pagination->navigation_position(isset($_GET['navigation_position']) && in_array($_GET['navigation_position'], array('left', 'right')) ? $_GET['navigation_position'] : 'outside');
+    $offset = (($pagination->get_page() - 1) * $records_per_page); 
+    $limit = $records_per_page;
+    
+    $publicaciones = $instancia->getPublicacionesbyCategory($id, 'disponible', 'desc', $limit, $offset, FALSE);    
+    $rows = $instancia->getPublicacionesbyCategory($id, 'disponible', '', '', '', TRUE);
+    $pagination->records($rows);
+    // records per page
+    $pagination->records_per_page($records_per_page);
+    
+    // list
     $categoriaArray = $instancia->getCategorias($id);
     $categoria = isset($categoriaArray[0]['categoria']) ? $categoriaArray[0]['categoria'] : '';    
 }
@@ -62,6 +75,7 @@ $encriptar = new Encryption();
                  <?php endforeach; ?>
                </ul>                    
           
+            <?php echo $pagination->render(); ?>
           <!--<div class="pagination pull-right">
             <ul>
               <li><a href="#">Prev</a> </li>
